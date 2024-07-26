@@ -1,0 +1,48 @@
+/* styles.css */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.clock-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.clock-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.digital-clock {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.analog-clock {
+    border: 1px solid #000;
+    border-radius: 50%;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.input-group label {
+    margin: 5px 0;
+}
+
+.input-group input {
+    width: 50px;
+    text-align: center;
+}
