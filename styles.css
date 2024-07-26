@@ -12,18 +12,21 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap; /* 追加 */
+    justify-content: center; /* 追加 */
 }
 
 .clock-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 20px;
+    margin: 20px; /* 修正 */
 }
 
 .digital-clock {
     font-size: 24px;
     margin-bottom: 10px;
+    text-align: center; /* 追加 */
 }
 
 .analog-clock {
@@ -35,7 +38,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 20px;
+    margin: 20px; /* 修正 */
 }
 
 .input-group label {
@@ -45,4 +48,28 @@ body {
 .input-group input {
     width: 50px;
     text-align: center;
+}
+
+/* スマホ用のスタイル */
+@media (max-width: 600px) {
+    .clock-container {
+        flex-direction: column; /* 縦並びに変更 */
+    }
+
+    .clock-group {
+        margin: 10px 0; /* 縦方向のマージンを調整 */
+    }
+
+    .input-group {
+        margin: 10px 0; /* 縦方向のマージンを調整 */
+    }
+
+    .digital-clock {
+        font-size: 18px; /* フォントサイズを調整 */
+    }
+
+    .analog-clock {
+        width: 150px; /* サイズを調整 */
+        height: 150px; /* サイズを調整 */
+    }
 }
