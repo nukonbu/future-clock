@@ -6,16 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const futureAnalogClock = document.getElementById('future-analog-clock');
     const hoursInput = document.getElementById('hours');
     const minutesInput = document.getElementById('minutes');
+    const clockSetButton = document.getElementById('clock-set');
 
     let futureOffset = 20 * 60 * 60 * 1000; // 初期値: 20時間後
+    let intervalId;
+    let isStopped = false;
+    let stoppedCurrentTime;
+    let stoppedFutureTime;
 
     function updateCurrentTime() {
+        if (isStopped) return;
         const now = new Date();
         currentDigitalClock.textContent = formatDate(now);
         drawClock(currentAnalogClock, now);
     }
 
     function updateFutureTime() {
+        if (isStopped) return;
         const now = new Date();
         const futureTime = new Date(now.getTime() + futureOffset);
         futureDigitalClock.textContent = formatDate(futureTime);
@@ -74,55 +81,65 @@ document.addEventListener('DOMContentLoaded', () => {
         const hour = time.getHours();
         const minute = time.getMinutes();
         const second = time.getSeconds();
-        const hourHandLength = radius * 0.5;
-        const minuteHandLength = radius * 0.8;
-        const secondHandLength = radius * 0.9;
 
         // Hour
-        const hourAngle = (hour % 12) * Math.PI / 6 + minute * Math.PI / 360 + second * Math.PI / 21600;
-        drawHand(ctx, hourAngle, hourHandLength, radius * 0.07);
+        const hourAngle = (hour % 12 + minute / 60) * Math.PI / 6;
+        drawHand(ctx, hourAngle, radius * 0.5, radius * 0.07);
 
         // Minute
-        const minuteAngle = minute * Math.PI / 30 + second * Math.PI / 1800;
-        drawHand(ctx, minuteAngle, minuteHandLength, radius * 0.07);
+        const minuteAngle = (minute + second / 60) * Math.PI / 30;
+        drawHand(ctx, minuteAngle, radius * 0.8, radius * 0.07);
 
         // Second
         const secondAngle = second * Math.PI / 30;
-        drawHand(ctx, secondAngle, secondHandLength, radius * 0.02);
+        drawHand(ctx, secondAngle, radius * 0.9, radius * 0.02);
     }
 
-    function drawHand(ctx, pos, length, width) {
+    function drawHand(ctx, angle, length, width) {
         ctx.beginPath();
         ctx.lineWidth = width;
         ctx.lineCap = 'round';
         ctx.moveTo(0, 0);
-        ctx.rotate(pos);
+        ctx.rotate(angle);
         ctx.lineTo(0, -length);
         ctx.stroke();
-        ctx.rotate(-pos);
+        ctx.rotate(-angle);
     }
 
     function updateFutureOffset() {
         const hours = parseInt(hoursInput.value) || 0;
         const minutes = parseInt(minutesInput.value) || 0;
         futureOffset = (hours * 60 + minutes) * 60 * 1000;
+        if (!isStopped) {
+            updateFutureTime();
+        }
     }
 
-    hoursInput.addEventListener('input', () => {
-        updateFutureOffset();
-        updateFutureTime();
-    });
+    function startClocks() {
+        isStopped = false;
+        intervalId = setInterval(() => {
+            updateCurrentTime();
+            updateFutureTime();
+        }, 1000);
+    }
 
-    minutesInput.addEventListener('input', () => {
-        updateFutureOffset();
-        updateFutureTime();
-    });
+    function stopClocks() {
+        isStopped = true;
+        clearInterval(intervalId);
+        stoppedCurrentTime = new Date();
+        stoppedFutureTime = new Date(stoppedCurrentTime.getTime() + futureOffset);
+        currentDigitalClock.textContent = formatDate(stoppedCurrentTime);
+        futureDigitalClock.textContent = formatDate(stoppedFutureTime);
+        drawClock(currentAnalogClock, stoppedCurrentTime);
+        drawClock(futureAnalogClock, stoppedFutureTime);
+    }
 
-    setInterval(() => {
-        updateCurrentTime();
-        updateFutureTime();
-    }, 1000);
+    hoursInput.addEventListener('input', updateFutureOffset);
+    minutesInput.addEventListener('input', updateFutureOffset);
 
+    clockSetButton.addEventListener('click', stopClocks);
+
+    startClocks();
     updateCurrentTime();
     updateFutureTime();
 });
